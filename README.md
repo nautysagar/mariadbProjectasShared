@@ -1,1 +1,3 @@
-"# mariadbProjectasShared" 
+to compile use maven clean and maven install.
+Since this is shared project hence need to add in the local repo...
+mvn install:install-file -Dfile=target/dataCollector-0.0.1-jar-with-dependencies.jar -DgroupId=com.nashtech -DartifactId=dataCollector -Dversion=0.0.1 -Dpackaging=jar
