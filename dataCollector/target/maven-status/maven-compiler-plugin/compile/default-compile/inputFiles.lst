@@ -1,0 +1,8 @@
+/home/vivkumar/spring-boot-mariadb-jpa-hibernate-master/dataCollector/src/main/java/com/nashtech/dataCollector/models/package-info.java
+/home/vivkumar/spring-boot-mariadb-jpa-hibernate-master/dataCollector/src/main/java/com/nashtech/dataCollector/package-info.java
+/home/vivkumar/spring-boot-mariadb-jpa-hibernate-master/dataCollector/src/main/java/com/nashtech/dataCollector/models/User.java
+/home/vivkumar/spring-boot-mariadb-jpa-hibernate-master/dataCollector/src/main/java/com/nashtech/dataCollector/models/UserDao.java
+/home/vivkumar/spring-boot-mariadb-jpa-hibernate-master/dataCollector/src/main/java/com/nashtech/dataCollector/config/package-info.java
+/home/vivkumar/spring-boot-mariadb-jpa-hibernate-master/dataCollector/src/main/java/com/nashtech/dataCollector/Application.java
+/home/vivkumar/spring-boot-mariadb-jpa-hibernate-master/dataCollector/src/main/java/com/nashtech/dataCollector/config/DatabaseConfig.java
+/home/vivkumar/spring-boot-mariadb-jpa-hibernate-master/dataCollector/src/main/java/com/nashtech/dataCollector/services/UserService.java

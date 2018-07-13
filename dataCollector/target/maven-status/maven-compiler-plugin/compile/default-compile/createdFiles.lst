@@ -1,0 +1,5 @@
+com/nashtech/dataCollector/models/User.class
+com/nashtech/dataCollector/models/UserDao.class
+com/nashtech/dataCollector/services/UserService.class
+com/nashtech/dataCollector/config/DatabaseConfig.class
+com/nashtech/dataCollector/Application.class
