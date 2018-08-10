@@ -40,6 +40,9 @@ public class DatabaseConfig {
     public DataSource dataSource() {
         final HikariDataSource ds = new HikariDataSource();
         ds.setMaximumPoolSize(100);
+        ds.setMinimumIdle(10);
+        ds.setIdleTimeout(300000);
+        ds.setConnectionTimeout(20000);
         ds.setDataSourceClassName(env.getProperty("db.datasource"));
         ds.addDataSourceProperty("url", env.getProperty("db.url"));
         ds.addDataSourceProperty("user", env.getProperty("db.username"));
@@ -73,7 +76,16 @@ public class DatabaseConfig {
         Properties additionalProperties = new Properties();
         additionalProperties.put("hibernate.dialect", env.getProperty("hibernate.dialect"));
         additionalProperties.put("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
-        additionalProperties.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
+       // additionalProperties.put("hibernate.hbm2ddl.auto", "");
+      //  additionalProperties.put("spring.jpa.properties.hibernate.generate_statistics",env.getProperty("spring.jpa.properties.hibernate.generate_statistics"));
+     //   additionalProperties.put("spring.jpa.properties.hibernate.cache.use_second_level_cache",env.getProperty("spring.jpa.properties.hibernate.cache.use_second_level_cache"));
+   //     additionalProperties.put("hibernate.cache.use_query_cache", true);
+    //    additionalProperties.put("hibernate.cache.region.factory_class", "org.hibernate.cache.ehcache.EhCacheRegionFactory");
+    //    additionalProperties.put("net.sf.ehcache.configurationResourceName","ehcache.xml");
+   //     additionalProperties.put("hibernate.cache.use_second_level_cache", true);
+     //   additionalProperties.put("spring.jpa.properties.hibernate.cache.use_query_cache",env.getProperty("spring.jpa.properties.hibernate.cache.use_query_cache"));
+     //   additionalProperties.put("spring.jpa.properties.hibernate.cache.region.factory_class",env.getProperty("spring.jpa.properties.hibernate.cache.region.factory_class"));
+     //   additionalProperties.put("spring.jpa.properties.javax.persistence.sharedCache.mode",env.getProperty("spring.jpa.properties.javax.persistence.sharedCache.mode"));
         entityManagerFactory.setJpaProperties(additionalProperties);
 
         return entityManagerFactory;
