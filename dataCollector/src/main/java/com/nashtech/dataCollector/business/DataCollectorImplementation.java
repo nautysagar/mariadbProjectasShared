@@ -20,5 +20,8 @@ public class DataCollectorImplementation extends ConfigurationImplemenation impl
 		super();
 	}
 
+	public DataCollectorImplementation(DataCollectorPool pool) {
+		super(pool);
+	}
 
 }

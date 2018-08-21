@@ -22,8 +22,10 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
+		 <start-class>com.nashtech.dataCollector.Application</start-class>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+   		<runSuite>**/DataCollectorTest.class</runSuite>
 		<!-- <sonar.host.url>http://localhost:9000</sonar.host.url> -->
 	</properties>
 
@@ -50,6 +52,24 @@
 			<artifactId>validation-api</artifactId>
 			<!-- <version>2.0.1.Final</version> -->
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-surefire-report-plugin</artifactId>
+  <version>2.22.0</version>
+  <type>maven-plugin</type>
+</dependency>
+<!-- <dependency>
+  <groupId>org.testng</groupId>
+  <artifactId>testng</artifactId>
+  <version>6.8</version>
+  <scope>test</scope>
+</dependency>
+ -->
 	</dependencies>
 
 	<build>
@@ -84,6 +104,15 @@
 					</descriptorRefs>
 				</configuration>
 			</plugin>
+			 <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+                <includes>
+                    <include>${runSuite}</include>
+                </includes>
+            </configuration>
+        </plugin>
 
 		</plugins>
 	</build>

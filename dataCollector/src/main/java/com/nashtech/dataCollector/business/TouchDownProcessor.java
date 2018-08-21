@@ -111,7 +111,7 @@ public class TouchDownProcessor {
 	public TdlogExtendResult createOrUpdateTouchCoordinate(TdlogExtendResult result, int tdlogrecordId,
 			int touchDownId) {
 
-		TdlogRecord tdlogrecordEntity = DatabaseDataCollectorUtil.getTdlogRecordById(tdlogrecordId, result);
+		TdlogRecord tdlogrecordEntity = DatabaseDataCollectorUtil.getTdlogRecordByID(tdlogrecordId, result);
 		if (result.getErrorLevel() != 0)
 			return result;
 		Touchdown touchdown = null;

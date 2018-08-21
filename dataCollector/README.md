@@ -12,6 +12,7 @@ Maven > 3.0
 Go on the project's root folder, then type:
 ------------------------------------------
 $ mvn package
+$ mvn -DskipTests=true  package (Without test run)
 $ mvn spring-boot:run
 
 From Eclipse (Spring Tool Suite)

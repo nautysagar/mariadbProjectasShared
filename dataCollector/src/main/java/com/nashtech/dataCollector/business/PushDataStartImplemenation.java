@@ -17,6 +17,11 @@ public class PushDataStartImplemenation extends PushDataImplemenation{
 	}
 	
 	
+	public PushDataStartImplemenation(DataCollectorPool pool) {
+		super(pool);
+	}
+
+
 	public TdlogResult pushDataStart() {
 		LOGGER.debug("DataCollector::pushDataStart() called");
 		record.setPushdataDeliveryTime(0.0);
@@ -28,8 +33,8 @@ public class PushDataStartImplemenation extends PushDataImplemenation{
 
 		record.incrementTouchDownNumber();
 		processor = new TouchDownProcessor();
-		TdlogRecord tdlogrecordEntity = DatabaseDataCollectorUtil.getTdlogRecordByRunGroupUUIDId(record.getRungroupUuid(),result);
-			if (result.getErrorLevel() != 0) return result;
+		TdlogRecord tdlogrecordEntity = DatabaseDataCollectorUtil.getTdlogRecordByGroupUUID(record.getRungroupUuid(),result);
+			if (result.getErrorLevel() != 0) return result; 
 		DataCollectorConversionUtil.createOrUpdateTouchDownRecord(tdlogrecordEntity, record);
 		TdlogRecord entityRecord = DataCollectorConversionUtil.mergeTdlogRecord(tdlogrecordEntity,result);
 			DataCollectorConversionUtil.addTouchdownRecordId(entityRecord,touchdownIds,record,result);

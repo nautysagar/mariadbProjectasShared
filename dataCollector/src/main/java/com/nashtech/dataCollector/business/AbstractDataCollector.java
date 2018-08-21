@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.nashtech.dataCollector.Util.DataCollectorConversionUtil;
 import com.nashtech.dataCollector.Util.DatabaseDataCollectorUtil;
+import com.nashtech.dataCollector.enums.TdlogResultCode;
 import com.nashtech.dataCollector.models.Configuration;
 import com.nashtech.dataCollector.pojo.ConfigurationMO;
 import com.nashtech.dataCollector.pojo.TdlogExtendResult;
@@ -38,6 +39,11 @@ public abstract class AbstractDataCollector {
 		
 
 	}
+	
+	public AbstractDataCollector(DataCollectorPool pool) {
+		this();
+		this.pool = pool;
+	}
 
 	private void init() {
 	//	data.setConfigurationdDbIdx(0);
@@ -64,12 +70,34 @@ public abstract class AbstractDataCollector {
 	
 
 	protected boolean getSystemConfiguration() {
-		Configuration config = DatabaseDataCollectorUtil.getDefaultConfiguration(result);
-		if (config == null)
+		Configuration config = DatabaseDataCollectorUtil.getByConfigName(result);
+		if (config == null) {
+			result.setErrorLevel(TdlogResultCode.SQL_EXECUTE_FAILED.getResultCode());
+			result.setErrorMessage("No Configuration record found by name default");
 			return false;
+		}
+			
 		DataCollectorConversionUtil.convertConfigurationEntityToMO(config, data);
 		return true;
 	}
+
+	public DataCollectorPool getPool() {
+		return pool;
+	}
+
+	public void setPool(DataCollectorPool pool) {
+		this.pool = pool;
+	}
+
+	public ConfigurationMO getData() {
+		return data;
+	}
+
+	public void setData(ConfigurationMO data) {
+		this.data = data;
+	}
+	
+	
 	
 	
 

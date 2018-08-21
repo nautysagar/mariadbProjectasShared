@@ -15,6 +15,11 @@ public class ConfigurationImplemenation extends RunStartImplemenation{
 	}
 	
 	
+	public ConfigurationImplemenation(DataCollectorPool pool) {
+		super(pool);
+	}
+
+
 	public TdlogResult configurationSetup(String restApiUrlPath) {
 		LOGGER.debug("DataCollector::ConfigurationSetup");
 		result.setErrorLevel(TdlogResultCode.OK.getResultCode());

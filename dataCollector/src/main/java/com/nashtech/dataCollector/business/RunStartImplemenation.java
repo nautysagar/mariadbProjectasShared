@@ -22,6 +22,10 @@ public class RunStartImplemenation extends PushDataStartImplemenation{
 		super();
 	}
 	
+	public RunStartImplemenation(DataCollectorPool pool) {
+		super(pool);
+	}
+
 	public TdlogResult runStart(String ocr, String diffLot, String sfcLot, String productName, int waferNumber,
 			String testStage, String nc12, String tpName, String tpVersion, String processingType,
 			String dataBlockIdentitier, int dataBlockDefinitionVersion, List<TdlogDataBlock> dataBlockParts) {
@@ -55,10 +59,8 @@ public class RunStartImplemenation extends PushDataStartImplemenation{
 		} else {
 			data.setConfigurationSetupCalled(false);
 		}
+		
 		DataCollectorConversionUtil.checkForIncompleteRecords();
-		
-		
-		
 		
 		TdlogRecord logRecord = DataCollectorConversionUtil.createFullTdlogRecord(ocr, diffLot, sfcLot, productName,
 				waferNumber, testStage, nc12, tpName, tpVersion, processingType, dataBlockIdentitier,

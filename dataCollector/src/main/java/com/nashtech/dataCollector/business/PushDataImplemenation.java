@@ -16,6 +16,10 @@ public class PushDataImplemenation extends PushDataEndImplemenation {
 		super();
 	}
 	
+	public PushDataImplemenation(DataCollectorPool pool) {
+		super(pool);
+	}
+
 	public TdlogResult pushData(int siteNumber, int xCoordinate, int yCoordinate, String dataBlockIndex,
 			String dataBlockContent) {
 		LOGGER.debug("DataCollector::PushData(I) called");
@@ -79,7 +83,7 @@ public class PushDataImplemenation extends PushDataEndImplemenation {
 
 	public TdlogResult pushData(int siteNumber, int deviceNumber, int dataBlockIndex, String dataBlockContent) {
 		LOGGER.debug("DataCollector::PushData(IV) called");
-		return pushData(siteNumber, deviceNumber, 0, dataBlockContent, dataBlockContent);
+		return pushData(siteNumber, deviceNumber, 0, dataBlockIndex, dataBlockContent);
 	}
 	
 	private int validateDataBlockIndex(String dataBlockIndex) {

@@ -16,9 +16,14 @@ public class RunFinishImplemenation extends AbstractDataCollector {
 	}
 	
 	
+	public RunFinishImplemenation(DataCollectorPool pool) {
+		super(pool);
+	}
+
+
 	public TdlogResult runFinish(int logCount) {
 		LOGGER.error(" DataCollector::runFinish()");
-		TdlogRecord tdlogrecordEntity = DatabaseDataCollectorUtil.getTdlogRecordByRunGroupUUIDId(record.getRungroupUuid(),result);
+		TdlogRecord tdlogrecordEntity = DatabaseDataCollectorUtil.getTdlogRecordByGroupUUID(record.getRungroupUuid(),result);
 		if (result.getErrorLevel() != 0) return result;
 		DataCollectorConversionUtil.updateFinalRecords(tdlogrecordEntity,logCount,result);
 		if (result.getErrorLevel() != 0) return result;

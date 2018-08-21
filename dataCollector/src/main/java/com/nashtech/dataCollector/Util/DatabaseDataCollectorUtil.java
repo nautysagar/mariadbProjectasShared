@@ -44,10 +44,10 @@ public class DatabaseDataCollectorUtil {
 		DatabaseDataCollectorUtil.dao = tdao;
 	}
 
-	private DatabaseDataCollectorUtil() {
+	public DatabaseDataCollectorUtil() {
 	}
 
-	public static Configuration getDefaultConfiguration(TdlogExtendResult result) {
+	public static Configuration getByConfigName(TdlogExtendResult result) {
 
 		Configuration config = null;
 
@@ -151,9 +151,9 @@ public class DatabaseDataCollectorUtil {
 	}
 
 	public static TdlogRecord mergeTdLogrecord(TdlogRecord record, TdlogExtendResult result) {
-
+		TdlogRecord res = null;
 		try {
-			dao.merge(record);
+			res = dao.merge(record);
 
 		} catch (RuntimeException e) {
 			result.setErrorLevel(TdlogResultCode.SQL_INSERT_FAULT.getResultCode());
@@ -162,7 +162,7 @@ public class DatabaseDataCollectorUtil {
 
 		}
 		result.setErrorLevel(TdlogResultCode.OK.getResultCode());
-		return record;
+		return res;
 	}
 
 	public static Object[] getTdlogRecordStatusById(int id) {
@@ -175,11 +175,15 @@ public class DatabaseDataCollectorUtil {
 			LOGGER.warn("No Tdlog record by id execution failed ");
 			return null;
 		}
+		
+		if (DataCollectorValidator.isEmpty(config))
+			return null;
+
 
 		return config.get(0);
 	}
 
-	public static TdlogRecord getTdlogRecordByRunGroupUUIDId(String groupId, TdlogExtendResult result) {
+	public static TdlogRecord getTdlogRecordByGroupUUID(String groupId, TdlogExtendResult result) {
 		List<TdlogRecord> config = null;
 
 		try {
@@ -201,7 +205,7 @@ public class DatabaseDataCollectorUtil {
 		return config.get(0);
 	}
 
-	public static TdlogRecord getTdlogRecordById(int id, TdlogExtendResult result) {
+	public static TdlogRecord getTdlogRecordByID(int id, TdlogExtendResult result) {
 		List<TdlogRecord> config = null;
 
 		try {
@@ -223,7 +227,7 @@ public class DatabaseDataCollectorUtil {
 		return config.get(0);
 	}
 
-	public static TdlogRecord getTdlogRecordWithTouchDownById(int id) {
+	public static TdlogRecord getTdlogRecordWithTouchDownByID(int id) {
 		List<TdlogRecord> config = null;
 
 		try {
@@ -239,7 +243,7 @@ public class DatabaseDataCollectorUtil {
 		return config.get(0);
 	}
 
-	public static int getrecordCountByUUIDORRecordState() {
+	public static int getTdlogRecordCountByCondition() {
 		int val = 0;
 
 		try {
@@ -252,38 +256,74 @@ public class DatabaseDataCollectorUtil {
 		return val;
 	}
 
-	public static void updateTdlogRecordByUUID(String uId) {
+	public static int updateTdlogRecordByFinishUUID(String uId) {
 
 		try {
-			configService.updateTdlogRecordFinishUUID(uId);
+			return configService.updateTdlogRecordFinishUUID(uId);
 
 		} catch (IllegalArgumentException e) {
 			LOGGER.debug("Update fail for tdlogRecordByUUID");
 		}
+		return -1;
 
 	}
 
-	public static void updateTouchDownRecordState(TdlogRecordState recordState, TdlogRecordState updateState) {
+	public static int updateTouchDownRecordState(TdlogRecordState recordState, TdlogRecordState updateState) {
 
 		try {
-			configService.updateTouchdownState(recordState, updateState);
+			return configService.updateTouchdownState(recordState, updateState);
 
 		} catch (IllegalArgumentException e) {
 			LOGGER.error("Update fail for touch down record");
 		}
+		return -1;
 
 	}
 
-	public static void updateTouchDownRecordStateAndTime(TdlogRecordState recordState, double deliveryTime,
+	public static int updateTouchDownRecordStateAndTime(TdlogRecordState recordState, double deliveryTime,
 			double peWaitTime, int id) {
 
 		try {
-			configService.updateTouchdownStateAndTime(recordState, deliveryTime, peWaitTime, id);
+			return configService.updateTouchdownStateAndTime(recordState, deliveryTime, peWaitTime, id);
 
 		} catch (RuntimeException e) {
 			LOGGER.error("Update fail for touch down record");
 		}
+		
+		return -1;
 
+	}
+/*
+	public static ConfigurationService getConfigService() {
+		return configService;
+	}
+
+	public static void setConfigService(ConfigurationService configService) {
+		DatabaseDataCollectorUtil.configService = configService;
+	}
+
+	public static ConfiguationDao getDao() {
+		return dao;
+	}
+
+	public static void setDao(ConfiguationDao dao) {
+		DatabaseDataCollectorUtil.dao = dao;
+	}*/
+
+	public ConfigurationService getTconfigService() {
+		return tconfigService;
+	}
+
+	public void setTconfigService(ConfigurationService tconfigService) {
+		this.tconfigService = tconfigService;
+	}
+
+	public ConfiguationDao getTdao() {
+		return tdao;
+	}
+
+	public void setTdao(ConfiguationDao tdao) {
+		this.tdao = tdao;
 	}
 
 	/*
@@ -297,4 +337,7 @@ public class DatabaseDataCollectorUtil {
 	 * result.setErrorLevel(-2); } }
 	 */
 
+	
+	
+	
 }
