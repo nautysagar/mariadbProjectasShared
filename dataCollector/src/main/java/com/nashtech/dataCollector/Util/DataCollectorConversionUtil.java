@@ -1,16 +1,21 @@
 package com.nashtech.dataCollector.Util;
 
+
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,10 +89,22 @@ public class DataCollectorConversionUtil {
 	public static WaferData convertWaferData(String ocr, String diffLot, String sfcLot, String productName,
 			int waferNumber, String testStage, String nc12, String tpName, String tpVersion) {
 
+		String version = "TDlogv3_" + getVersionFromPom();
 		return new WaferData(ocr, diffLot, sfcLot, waferNumber, testStage, nc12, productName, tpName, tpVersion,
-				"TDlogv3_0.0.1");
-		// TODO Check with Mathias for tpiversion
+				version);
+		
+	}
 
+	private static String getVersionFromPom() {
+		MavenXpp3Reader reader = new MavenXpp3Reader();
+		Model model = null;
+		try {
+			model = reader.read(new FileReader("pom.xml"));
+		} catch (IOException | XmlPullParserException e) {
+			e.printStackTrace();
+		}
+
+		return model.getVersion();
 	}
 
 	public static void convertTdlogRecordToEntity(TdlogRecord record) {
@@ -140,15 +157,6 @@ public class DataCollectorConversionUtil {
 				list.add(k);
 			}
 		});
-		/*
-		 * Iterator<TdlogDataBlock> itr = dataBlockParts.iterator(); while
-		 * (itr.hasNext()) { TdlogDataBlock b = itr.next(); KeyOrder k = new KeyOrder();
-		 * 
-		 * k.setEnumId(b.getKey()); k.setEnumKey(b.getValue());
-		 * 
-		 * list.add(k); }
-		 */
-
 		return list;
 	}
 
@@ -227,10 +235,14 @@ public class DataCollectorConversionUtil {
 	public static void checkForIncompleteRecords() {
 		if (DatabaseDataCollectorUtil.getTdlogRecordCountByCondition() > 0) {
 			DatabaseDataCollectorUtil.updateTdlogRecordByFinishUUID("00000001-0002-0003-0004-000000000005");
-			DatabaseDataCollectorUtil.updateTouchDownRecordState(TdlogRecordState.RECORD_INIT,
-					TdlogRecordState.RECORD_CREATED);
+			updateTouchDownRecordState();
 		}
 
+	}
+	
+	public static void updateTouchDownRecordState() {
+		DatabaseDataCollectorUtil.updateTouchDownRecordState(TdlogRecordState.RECORD_INIT,
+				TdlogRecordState.RECORD_CREATED);
 	}
 
 	public static void updateFinalRecords(TdlogRecord tdlogrecordEntity, int logCount, TdlogExtendResult result) {
@@ -259,12 +271,6 @@ public class DataCollectorConversionUtil {
 
 	public static void checkForInValidTouchDownRecords(TdlogRecord tdlogrecordEntity, TdlogExtendResult result) {
 		List<Touchdown> td = tdlogrecordEntity.getTouchdown();
-		/*
-		 * List<Touchdown> list = td.stream() .filter(d ->
-		 * d.getTouchdownCoordinates().parallelStream().allMatch(tdc -> !tdc.isValid()))
-		 * .collect(Collectors.toList());
-		 */
-
 		List<Touchdown> list = td.stream().filter(d -> {
 			if (d.getTouchdownCoordinates() != null) {
 				d.getTouchdownCoordinates().parallelStream().filter(tdc -> {
@@ -304,17 +310,22 @@ public class DataCollectorConversionUtil {
 
 	}
 
-	public static void updateTouchDownStateAndTime(TdlogRecordMO record, long observableTime,
-			TdlogExtendResult result) {
+	public static void updateTouchDownStateAndTime(TdlogRecordMO record, long observableTime, TdlogExtendResult result,
+			TdlogRecord enityRecord) {
 		Touchdown td = null;
-		TdlogRecord r = DatabaseDataCollectorUtil.getTdlogRecordByID(record.getTdlogrecordDbIdx(), result);
-		DatabaseDataCollectorUtil.updateTouchDownRecordStateAndTime(TdlogRecordState.RECORD_CREATED,
-				result.getDeliveryTime(), observableTime, record.getTouchdownDbIdx());
-		if (result.getErrorLevel() != 0)
-			return;
-		if (!DataCollectorValidator.isEmpty(r.getTouchdown())) {
-			td = r.getTouchdown().stream().filter(t -> {
-				if (t.getId() == record.getTouchdownDbIdx()) {
+		enityRecord.getTouchdown().stream().forEach(t -> {
+			if (t.getIdx() == record.getTouchdownNumber()) {
+				t.setDeliveryTime(result.getDeliveryTime());
+				t.setRecordState(TdlogRecordState.RECORD_CREATED);
+				t.setPeWaitTime(observableTime);
+
+			}
+		});
+
+		
+		if (!DataCollectorValidator.isEmpty(enityRecord.getTouchdown())) {
+			td = enityRecord.getTouchdown().stream().filter(t -> {
+				if (t.getIdx() == record.getTouchdownNumber()) {
 					return true;
 				}
 				return false;
@@ -324,11 +335,12 @@ public class DataCollectorConversionUtil {
 		if (td != null) {
 			record.setTouchdownNumber(td.getIdx());
 			final List<Integer> keyOrderIds = new ArrayList<>();
-			if (r.getKeyorder() != null)
-				r.getKeyorder().stream().forEach(j -> keyOrderIds.add(j.getEnumId()));
+			if (enityRecord.getKeyorder() != null)
+				enityRecord.getKeyorder().stream().forEach(j -> keyOrderIds.add(j.getEnumId()));
 
 			if (td != null && !DataCollectorValidator.isEmpty(td.getTouchdownCoordinates())) {
-				result.setCompleteDataBlocks(getTdCordinateCountByKeyOrder(td.getTouchdownCoordinates(), keyOrderIds));
+				result.setCompleteDataBlocks(getTdCordinateCountByKeyOrder(td.getTouchdownCoordinates(), keyOrderIds)); 
+				// TODO Where we are setting this count in entity
 			}
 		} else {
 			result.setErrorLevel(TdlogResultCode.DC_INPUT_INCOMPLETE.getResultCode());

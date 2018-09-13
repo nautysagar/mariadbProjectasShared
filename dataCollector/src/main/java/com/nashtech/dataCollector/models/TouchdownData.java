@@ -66,4 +66,8 @@ public class TouchdownData extends BaseEntity {
 	public String toString() {
 		return "TouchdownData [id=" + getId() + ", keyOrder=" + keyOrder + ", uidStreamData=" + uidStreamData + "]";
 	}
+	
+	public String getKeys() {
+		return (getKeyOrder()+getUidStreamData());
+	}
 }

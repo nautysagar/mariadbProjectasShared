@@ -15,7 +15,7 @@ public class PushDataImplemenation extends PushDataEndImplemenation {
 	public PushDataImplemenation() {
 		super();
 	}
-	
+
 	public PushDataImplemenation(DataCollectorPool pool) {
 		super(pool);
 	}
@@ -24,7 +24,7 @@ public class PushDataImplemenation extends PushDataEndImplemenation {
 			String dataBlockContent) {
 		LOGGER.debug("DataCollector::PushData(I) called");
 		int dataBlockKey = validateDataBlockIndex(dataBlockIndex);
-		
+
 		if (dataBlockKey < 0) {
 			result.setErrorLevel(TdlogResultCode.DC_INPUT_INCOMPLETE.getResultCode());
 			result.setErrorMessage("DataCollector::PushData() dataBlockIndex not found !");
@@ -41,13 +41,12 @@ public class PushDataImplemenation extends PushDataEndImplemenation {
 	public TdlogResult pushData(int siteNumber, int deviceNumber, String dataBlockIndex, String dataBlockContent) {
 		LOGGER.debug("DataCollector::PushData(II) called");
 		int dataBlockKey = validateDataBlockIndex(dataBlockIndex);
-		
+
 		if (dataBlockKey < 0) {
 			result.setErrorLevel(TdlogResultCode.DC_INPUT_INCOMPLETE.getResultCode());
 			result.setErrorMessage("DataCollector::PushData() dataBlockIndex not found !");
 			return result;
 		}
-			
 
 		if (record.getProcessingType() != TdlogProcessingType.REELRUN.ordinal()) {
 			result.setErrorLevel(TdlogResultCode.DC_WRONG_PUSHDATA_INTERFACE.getResultCode());
@@ -68,15 +67,17 @@ public class PushDataImplemenation extends PushDataEndImplemenation {
 			return result;
 		}
 
-		if (record.getTouchdownDbIdx() == 0) {
+		// if (record.getTouchdownDbIdx() == 0) {
+		if (record.getTouchdownNumber() == 0) {
 			result.setErrorLevel(TdlogResultCode.SQL_NOT_FOUND.getResultCode());
 			return result;
 		}
-		//Todo need to check for condition without parallel processing
-		pool.submitTask(new DataCollectorRunnableTask(siteNumber, xCoordinate, yCoordinate, dataBlockIndex,dataBlockContent,processor));
+		// Todo need to check for condition without parallel processing
+		pool.submitTask(new DataCollectorRunnableTask(siteNumber, xCoordinate, yCoordinate, dataBlockIndex,
+				dataBlockContent, processor, entity));
 		result.setErrorLevel(TdlogResultCode.OK.getResultCode());
 		long endTime = System.currentTimeMillis();
-		long dTime = endTime-startTime;
+		long dTime = endTime - startTime;
 		record.addPushdataDeliveryTime(dTime);
 		return result;
 	}
@@ -85,7 +86,7 @@ public class PushDataImplemenation extends PushDataEndImplemenation {
 		LOGGER.debug("DataCollector::PushData(IV) called");
 		return pushData(siteNumber, deviceNumber, 0, dataBlockIndex, dataBlockContent);
 	}
-	
+
 	private int validateDataBlockIndex(String dataBlockIndex) {
 		return DataCollectorConversionUtil.findDataBlockId(dataBlockIndex, record);
 	}

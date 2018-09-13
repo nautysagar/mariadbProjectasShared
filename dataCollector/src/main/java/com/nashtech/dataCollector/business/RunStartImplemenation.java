@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.nashtech.dataCollector.Util.DataCollectorConversionUtil;
 import com.nashtech.dataCollector.Util.DataCollectorValidator;
@@ -15,6 +16,7 @@ import com.nashtech.dataCollector.models.TdlogRecord;
 import com.nashtech.dataCollector.pojo.TdlogDataBlock;
 import com.nashtech.dataCollector.pojo.TdlogResult;
 
+@Transactional
 public class RunStartImplemenation extends PushDataStartImplemenation{
 	private static final Logger LOGGER = LoggerFactory.getLogger(RunStartImplemenation.class);
 
@@ -67,7 +69,8 @@ public class RunStartImplemenation extends PushDataStartImplemenation{
 				dataBlockDefinitionVersion, dataBlockParts, data);
 
 		
-		int tdlogRecordId = saveTdlogRecord(logRecord);
+		entity = saveTdlogRecord(logRecord);
+		int tdlogRecordId = entity.getId();
 		if (tdlogRecordId == -2)
 			return result;
 
@@ -95,6 +98,7 @@ public class RunStartImplemenation extends PushDataStartImplemenation{
 		long end = System.currentTimeMillis();
 		if ((end - start) / 1000 > 10) {
 			result.setErrorLevel(TdlogResultCode.DC_START_DELIVERY_TIMEOUT.getResultCode());
+			result.setErrorMessage("delivery timeout - no feedback from REST-API within 10 sec.");
 			LOGGER.debug(result.toString());
 			break;
 		}
@@ -113,7 +117,7 @@ public class RunStartImplemenation extends PushDataStartImplemenation{
 	}
 
 	private boolean checkTdlogRecordStatus(Object state, Object code) {
-		boolean resultAvailable = true; //TODO BUG make it false, true for testing purpose
+		boolean resultAvailable = false;
 		TdlogRecordState recordState = (TdlogRecordState) state;
 		String errorCode = (String) code;
 		switch (recordState) {
@@ -153,8 +157,8 @@ public class RunStartImplemenation extends PushDataStartImplemenation{
 	}
 	
 
-	private int saveTdlogRecord(TdlogRecord logRecord) {
-		return DatabaseDataCollectorUtil.saveTdLogrecord(logRecord, result);
+	private TdlogRecord saveTdlogRecord(TdlogRecord record) {
+		return DatabaseDataCollectorUtil.saveTdLogrecord(record, result);
 
 	}
 

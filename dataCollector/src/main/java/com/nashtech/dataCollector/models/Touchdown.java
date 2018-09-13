@@ -36,15 +36,16 @@ public class Touchdown extends BaseEntity {
 	@JoinColumn(name="touchdownnumber_id")
 	private List<TouchdownCoordinates> touchdownCoordinates;
 	
-	@Column(name="record_state")
+	@Column(name="record_state",updatable=false)
 	private TdlogRecordState recordState = TdlogRecordState.RECORD_CREATED;
 	
-	@Column(name="error_code")
+	@Column(name="error_code",updatable=false)
 	private String errorCode;
 	
-	@Column(name="error_text")
+	@Column(name="error_text",updatable=false)
 	private String errorText;
 	
+	@Column(name="retries",updatable=false)
 	private int retries;
 	
 	@Column(name="delivery_time")
@@ -56,10 +57,10 @@ public class Touchdown extends BaseEntity {
 	public Touchdown() {
 		super();
 	}
-	public Touchdown(int id, int idx) {
+	public Touchdown(int id) {
 		super(id);
-		this.idx = idx;
 	}
+	
 	public Touchdown(int idx, String transportUUID, List<TouchdownCoordinates> touchdownCoordinates,
 			TdlogRecordState recordState, String errorCode, String errorText,double deliveryTime, double peWaitTime ) {
 	//	super(id);		
@@ -73,7 +74,13 @@ public class Touchdown extends BaseEntity {
 		this.peWaitTime = peWaitTime;
 	}
 	
-	
+	public Touchdown(int id, int idx, String transportUUID, List<TouchdownCoordinates> touchdownCoordinates,
+			TdlogRecordState recordState, String errorCode, String errorText,double deliveryTime, double peWaitTime ) {
+		
+		this(idx, transportUUID, touchdownCoordinates, recordState, errorCode, errorText, deliveryTime, peWaitTime);
+		this.id = id;
+
+	}
 	
 	//@JsonProperty("IDX")
 	public int getIdx() {

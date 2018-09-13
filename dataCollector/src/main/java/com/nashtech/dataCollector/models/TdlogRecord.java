@@ -31,24 +31,7 @@ import com.nashtech.dataCollector.enums.TdlogRecordState;
 																											+ "r.finishTransportUUID IS NULL OR r.recordState = 0"),
 		@NamedQuery(name = TdlogRecord.UPDATE_FINISHTRANSPORTUUID_AND_LOGCOUNT_BY_ID, query = "UPDATE TdlogRecord r SET r.finishTransportUUID=:uId, r.logCount=:count where r.id=:id"),
 		@NamedQuery(name = TdlogRecord.UPDATE_RECORD_FINISHTRANSPORTUUID, query = "UPDATE TdlogRecord r SET r.finishTransportUUID=:uId where LENGTH(r.finishTransportUUID) < 2 OR r.finishTransportUUID IS NULL") })
-/*
-@NamedStoredProcedureQueries({
-    @NamedStoredProcedureQuery (
-                    name = "addTouchDownData",
-                    procedureName = "add_touchdown_data",
-                    parameters = {
-                                    @StoredProcedureParameter(mode = ParameterMode.IN,  type=Integer.class,    name = "p_touchdown_db_idx"),
-                                    @StoredProcedureParameter(mode = ParameterMode.IN,  type=Integer.class,    name = "p_sitenumber"),
-                                    @StoredProcedureParameter(mode = ParameterMode.IN,  type=Integer.class,    name = "p_x"),
-                                    @StoredProcedureParameter(mode = ParameterMode.IN,  type=Integer.class,    name = "p_y"),
-                                    @StoredProcedureParameter(mode = ParameterMode.IN,  type=Integer.class,    name = "p_db_idx"),
-                                    @StoredProcedureParameter(mode = ParameterMode.IN,  type=String.class,    name = "p_uuidstream"),
-                                    @StoredProcedureParameter(mode = ParameterMode.IN,  type=Integer.class,    name = "p_record_unique_idx"),
-                                    @StoredProcedureParameter(mode = ParameterMode.OUT, type=Integer.class,    name = "p_return")
-                    }
-    )
-    
-})*/
+
 
 public class TdlogRecord extends BaseEntity {
 	public static final String QUERY_GETALL_RECORDS = "TdlogRecord.GetAllRecords";
@@ -61,15 +44,15 @@ public class TdlogRecord extends BaseEntity {
 	public static final String UPDATE_FINISHTRANSPORTUUID_AND_LOGCOUNT_BY_ID = "TdlogRecord.UpdateRecordTransportUUIDAndLogCount";
 	public static final String UPDATE_TOUCHDOWN_RECORD_STATE_BY_ID= "TdlogRecord.UpdateTouchDownRecordByTdRecordId";
 	
-	@Column(name = "record_state")
+	@Column(name = "record_state",updatable=false)
 	private TdlogRecordState recordState = TdlogRecordState.RECORD_CREATED;
 
 	@Size(min = 0, max = 6)
-	@Column(name = "error_code")
+	@Column(name = "error_code",updatable=false)
 	private String errorCode;
 
 	@Size(min = 0, max = 125)
-	@Column(name = "error_text")
+	@Column(name = "error_text",updatable=false)
 	private String errorText;
 
 	@Size(min = 0, max = 10)
@@ -144,9 +127,17 @@ public class TdlogRecord extends BaseEntity {
 	public TdlogRecord(int id, TdlogRecordState recordState, String errorCode, String errorText, String pid,
 			int retries, int logCount, String rungroupUUID, String startTransportUUID, String finishTransportUUID,
 			String dateTimeLocalOffset, String productionHost, String productionUser, DeviceDataDef deviceDataDef,
-			RunDataDef runDataDef, TouchdownDataDef touchdownDataDef, /* DeviceStreamDef deviceStreamDef, */
+			RunDataDef runDataDef, TouchdownDataDef touchdownDataDef, DeviceStreamDef deviceStreamDef,
 			WaferData waferData, List<Touchdown> touchdown, List<KeyOrder> keyorder) {
-		super(id);
+		this(id, recordState, errorCode, errorText, pid, retries, logCount, rungroupUUID, startTransportUUID, finishTransportUUID, dateTimeLocalOffset, productionHost, productionUser, deviceDataDef, runDataDef, touchdownDataDef, deviceStreamDef, waferData, keyorder);
+		this.touchdown = touchdown;
+	}
+	public TdlogRecord(int id, TdlogRecordState recordState, String errorCode, String errorText, String pid,
+			int retries, int logCount, String rungroupUUID, String startTransportUUID, String finishTransportUUID,
+			String dateTimeLocalOffset, String productionHost, String productionUser, DeviceDataDef deviceDataDef,
+			RunDataDef runDataDef, TouchdownDataDef touchdownDataDef,  DeviceStreamDef deviceStreamDef,
+			WaferData waferData, List<KeyOrder> keyorder) {
+		this.id= id;
 		this.recordState = recordState;
 		this.errorCode = errorCode;
 		this.errorText = errorText;
@@ -162,11 +153,11 @@ public class TdlogRecord extends BaseEntity {
 		this.deviceDataDef = deviceDataDef;
 		this.runDataDef = runDataDef;
 		this.touchdownDataDef = touchdownDataDef;
-		// this.deviceStreamDef = deviceStreamDef;
+		this.deviceStreamDef = deviceStreamDef;
 		this.waferData = waferData;
-		this.touchdown = touchdown;
+	
 	}
-
+	
 	// @JsonIgnore
 	// @JsonProperty("RECORD_STATE")
 	public TdlogRecordState getRecordState() {

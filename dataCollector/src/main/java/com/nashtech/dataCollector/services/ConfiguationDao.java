@@ -24,11 +24,11 @@ public class ConfiguationDao {
 	/**
 	   * Save the TdlogRecord in the database.
 	   */
-	  public int create(TdlogRecord record) {
+	  public TdlogRecord create(TdlogRecord record) {
 		LOGGER.debug("Persisting TdlogRecord in dataBase");
 	    entityManager.persist(record);
 	    entityManager.flush();
-	    return record.getId();
+	    return record;
 	  }
 	  
 	  /**

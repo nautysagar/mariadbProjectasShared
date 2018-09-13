@@ -42,11 +42,17 @@ public class TouchdownCoordinates extends BaseEntity {
 		// TODO Auto-generated constructor stub
 	}
 
-	public TouchdownCoordinates(int siteNumber, /* String uidStreamData, */ int xCoordinate, int yCoordinate) {
+	public TouchdownCoordinates(int siteNumber, int xCoordinate, int yCoordinate) {
 		this.siteNumber = siteNumber;
-		// this.uidStreamData = uidStreamData;
 		this.xCoordinate = xCoordinate;
 		this.yCoordinate = yCoordinate;
+	}
+	
+	public TouchdownCoordinates(int id, int siteNumber, int xCoordinate, int yCoordinate, boolean valid,List<TouchdownData> touchdownData) {
+		this(siteNumber, xCoordinate, yCoordinate);
+		this.id = id;
+		this.valid= valid;
+		this.touchdownData = touchdownData;
 	}
 
 	public int getSiteNumber() {

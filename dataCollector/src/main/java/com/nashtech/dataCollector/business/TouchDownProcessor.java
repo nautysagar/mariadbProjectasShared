@@ -5,11 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.nashtech.dataCollector.Util.DataCollectorValidator;
-import com.nashtech.dataCollector.Util.DatabaseDataCollectorUtil;
 import com.nashtech.dataCollector.enums.TdlogResultCode;
 import com.nashtech.dataCollector.models.TdlogRecord;
 import com.nashtech.dataCollector.models.Touchdown;
@@ -24,18 +22,26 @@ public class TouchDownProcessor {
 
 	private List<TouchdownData> tddEntityRecord;
 
+	// private Map<String,TouchdownData> tddEntityRecord;
+
 	public TouchDownProcessor() {
 		tdcCachedRecord = new HashSet<>();
 	}
 
 	public synchronized void addCachedRecord(int siteNumber, int xCoordinate, int yCoordinate, int dataBlockIndex,
-			String dataBlockContent) {
+			String dataBlockContent, TdlogRecord record) {
+
+		TouchdownCoordinates tdc = null;
 
 		if (DataCollectorValidator.isEmpty(tdcCachedRecord)) {
-			tdcCachedRecord
-					.add(createTdCordinate(siteNumber, xCoordinate, yCoordinate, dataBlockIndex, dataBlockContent));
+			tdc = createTdCordinate(siteNumber, xCoordinate, yCoordinate, dataBlockIndex, dataBlockContent);
 		} else {
-			updateTdCordinate(siteNumber, xCoordinate, yCoordinate, dataBlockIndex, dataBlockContent);
+			tdc = updateTdCordinate(siteNumber, xCoordinate, yCoordinate, dataBlockIndex, dataBlockContent);
+		}
+
+		if (tdc != null) {
+			indexDuplicatetouchDown(record, tdc);
+			tdcCachedRecord.add(tdc);
 		}
 
 	}
@@ -59,7 +65,7 @@ public class TouchDownProcessor {
 		return d;
 	}
 
-	private void updateTdCordinate(int siteNumber, int xCoordinate, int yCoordinate, int dataBlockIndex,
+	private TouchdownCoordinates updateTdCordinate(int siteNumber, int xCoordinate, int yCoordinate, int dataBlockIndex,
 			String dataBlockContent) {
 
 		TouchdownCoordinates tdc = null;
@@ -71,13 +77,11 @@ public class TouchDownProcessor {
 		}).findAny().orElse(null);
 
 		if (tdc == null) {
-
-			tdcCachedRecord
-					.add(createTdCordinate(siteNumber, xCoordinate, yCoordinate, dataBlockIndex, dataBlockContent));
+			tdc = createTdCordinate(siteNumber, xCoordinate, yCoordinate, dataBlockIndex, dataBlockContent);
 		} else {
-
 			updateTdCordinate(tdc, dataBlockIndex, dataBlockContent);
 		}
+		return tdc;
 
 	}
 
@@ -109,50 +113,47 @@ public class TouchDownProcessor {
 	}
 
 	public TdlogExtendResult createOrUpdateTouchCoordinate(TdlogExtendResult result, int tdlogrecordId,
-			int touchDownId) {
+			int touchDownIdx, TdlogRecord enityRecord) {
 
-		TdlogRecord tdlogrecordEntity = DatabaseDataCollectorUtil.getTdlogRecordByID(tdlogrecordId, result);
-		if (result.getErrorLevel() != 0)
-			return result;
 		Touchdown touchdown = null;
 		List<Touchdown> td = null;
 
-		if (tdlogrecordEntity != null) {
-			td = tdlogrecordEntity.getTouchdown();
+		if (enityRecord != null) {
+			td = enityRecord.getTouchdown();
 			if (DataCollectorValidator.isEmpty(td)) {
 				result.setErrorLevel(TdlogResultCode.DC_INPUT_INCOMPLETE.getResultCode());
 				return result;
 			}
-			touchdown = td.stream().filter(t -> t.getId() == touchDownId).findAny().orElse(null);
+			touchdown = td.parallelStream().filter(t -> t.getIdx() == touchDownIdx).findAny().orElse(null);
 		}
 
 		if (touchdown == null) {
 			result.setErrorLevel(TdlogResultCode.DC_INPUT_INCOMPLETE.getResultCode());
 			return result;
 		}
-		long start = System.currentTimeMillis();
 
-		collectAllTouchDown(td);
-		long end1 = System.currentTimeMillis();
-		LOGGER.error(" Time for collect all touchdown:" + (end1 - start));
-
-		start = System.currentTimeMillis();
 		touchdown.setTouchdownCoordinates(startMergingtdCoordeinatesAndData(touchdown.getTouchdownCoordinates()));
-		end1 = System.currentTimeMillis();
-		LOGGER.error(" Time for merging cache:" + (end1 - start));
-		start = System.currentTimeMillis();
-		DatabaseDataCollectorUtil.mergeTdLogrecord(tdlogrecordEntity, result);
-		end1 = System.currentTimeMillis();
-		LOGGER.error(" Time for merging database:" + (end1 - start));
 
 		return result;
 	}
 
-	private List<TouchdownCoordinates> startMergingtdCoordeinatesAndData(List<TouchdownCoordinates> tdc) {
-		tdcCachedRecord.stream().forEach(action -> {
-			indexDuplicatetouchDown(action.getTouchdownData());
-		});
+	private void indexDuplicatetouchDown(TdlogRecord enityRecord, TouchdownCoordinates tdc) {
 
+		List<Touchdown> td = null;
+		if (enityRecord != null) {
+			td = enityRecord.getTouchdown();
+		}
+		if (!DataCollectorValidator.isEmpty(td)) {
+			collectAllTouchDownData(td);
+			indexDuplicatetouchDown(tdc);
+		}
+	}
+
+	private void indexDuplicatetouchDown(TouchdownCoordinates tdc) {
+		indexDuplicatetouchDown(tdc.getTouchdownData());
+	}
+
+	private List<TouchdownCoordinates> startMergingtdCoordeinatesAndData(List<TouchdownCoordinates> tdc) {
 		if (DataCollectorValidator.isEmpty(tdc))
 			tdc = new ArrayList<>();
 		tdc.addAll(tdcCachedRecord);
@@ -161,37 +162,37 @@ public class TouchDownProcessor {
 
 	}
 
-	private void collectAllTouchDown(List<Touchdown> td) {
-		tddEntityRecord = new ArrayList<>();
-		td.stream().forEach(action -> {
-			if (action.getTouchdownCoordinates() != null) {
-				// tddEntityRecord =
-				// td.stream().map(m->m.getTouchdownCoordinates()).flatMap(k->k.stream().map(x->x.getTouchdownData()).flatMap(j->j.stream())).collect(Collectors.toList());
-				tddEntityRecord.addAll(action.getTouchdownCoordinates().stream().map(m -> m.getTouchdownData())
-						.flatMap(k -> k.stream()).collect(Collectors.toList()));
-			}
-		});
-
+	private void collectAllTouchDownData(List<Touchdown> td) {
+		if (DataCollectorValidator.isEmpty(tddEntityRecord)) {
+			tddEntityRecord = new ArrayList<>();
+			td.stream().forEach(action -> {
+				if (action.getTouchdownCoordinates() != null) {
+					tddEntityRecord.addAll(action.getTouchdownCoordinates().parallelStream()
+							.map(m -> m.getTouchdownData()).flatMap(k -> k.stream()).collect(Collectors.toList()));
+				}
+			});
+		}
 	}
 
 	private void indexDuplicatetouchDown(List<TouchdownData> ctdd) {
 		ctdd.stream().forEach(k -> {
 			TouchdownData data = tddEntityRecord.parallelStream().filter(t -> {
-				if (t.getKeyOrder() == k.getKeyOrder() && t.getUidStreamData().equals(k.getUidStreamData())) {
-
+				if (t.getKeys().equals(k.getKeys())) {
 					return true;
 				}
 				return false;
-			}).findAny().orElse(null);
-			if (data != null)
+			}).findFirst().orElse(null);
+			if (data != null) {
 				k.setRecordUnique(data.getId());
+			}
 		});
 
 	}
 
 	public void emptyAllCache() {
 		tdcCachedRecord.clear();
-		tddEntityRecord.clear();
+		if (!DataCollectorValidator.isEmpty(tddEntityRecord))
+			tddEntityRecord.clear();
 	}
 
 }

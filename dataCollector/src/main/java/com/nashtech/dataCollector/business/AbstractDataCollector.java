@@ -12,6 +12,7 @@ import com.nashtech.dataCollector.Util.DataCollectorConversionUtil;
 import com.nashtech.dataCollector.Util.DatabaseDataCollectorUtil;
 import com.nashtech.dataCollector.enums.TdlogResultCode;
 import com.nashtech.dataCollector.models.Configuration;
+import com.nashtech.dataCollector.models.TdlogRecord;
 import com.nashtech.dataCollector.pojo.ConfigurationMO;
 import com.nashtech.dataCollector.pojo.TdlogExtendResult;
 
@@ -23,6 +24,8 @@ public abstract class AbstractDataCollector {
 	protected ConfigurationMO data;
 	
 	protected TdlogRecordMO record;
+	
+	protected TdlogRecord entity;
 
 	private final String VERSION = "TDlogv3_0.0.1";
 	
@@ -31,7 +34,6 @@ public abstract class AbstractDataCollector {
 	protected List<Integer> touchdownIds;
 	
 	protected TouchDownProcessor processor;
-	
 
 	public AbstractDataCollector() {
 		initializeVariables();
@@ -56,7 +58,6 @@ public abstract class AbstractDataCollector {
 		record  = new TdlogRecordMO();
 		data = new ConfigurationMO();
 		result = new TdlogExtendResult();
-	//	processor = new TouchDownProcessor();
 		touchdownIds = new ArrayList<>();
 		record.setTouchdownDbIdx(0); //currently i am not using this
 		record.setTdlogrecordDbIdx(0);
@@ -65,6 +66,7 @@ public abstract class AbstractDataCollector {
 		record.setTpiVersion(VERSION);
 		record.setPushdataJob(0);
 		record.setPushdataDeliveryTime(0.0);
+		entity = null;
 
 	}
 	

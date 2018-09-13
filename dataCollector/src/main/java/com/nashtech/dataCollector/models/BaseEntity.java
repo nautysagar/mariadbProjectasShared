@@ -23,7 +23,7 @@ public abstract class BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	protected int id;
 
 	/** < indexed entity and mysql table */
 

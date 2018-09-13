@@ -77,7 +77,11 @@ public class DatabaseConfig {
         additionalProperties.put("hibernate.dialect", env.getProperty("hibernate.dialect"));
         additionalProperties.put("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
        // additionalProperties.put("hibernate.hbm2ddl.auto", "");
-      //  additionalProperties.put("spring.jpa.properties.hibernate.generate_statistics",env.getProperty("spring.jpa.properties.hibernate.generate_statistics"));
+     //   additionalProperties.put("hibernate.generate_statistics",true);
+        additionalProperties.put("hibernate.jdbc.batch_size", "25");
+      //  additionalProperties.put("hibernate.order_inserts", "true");
+      //  additionalProperties.put("hibernate.order_updates", "true");
+        additionalProperties.put("hibernate.jdbc.batch_versioned_data", "true");
      //   additionalProperties.put("spring.jpa.properties.hibernate.cache.use_second_level_cache",env.getProperty("spring.jpa.properties.hibernate.cache.use_second_level_cache"));
    //     additionalProperties.put("hibernate.cache.use_query_cache", true);
     //    additionalProperties.put("hibernate.cache.region.factory_class", "org.hibernate.cache.ehcache.EhCacheRegionFactory");

@@ -2,11 +2,13 @@ package com.nashtech.dataCollector.business;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.nashtech.dataCollector.Util.DataCollectorValidator;
 import com.nashtech.dataCollector.enums.TdlogResultCode;
 import com.nashtech.dataCollector.pojo.TdlogResult;
 
+@Transactional
 public class ConfigurationImplemenation extends RunStartImplemenation{
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationImplemenation.class);
 

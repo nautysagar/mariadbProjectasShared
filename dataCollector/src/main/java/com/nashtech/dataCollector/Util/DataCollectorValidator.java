@@ -33,6 +33,7 @@ public class DataCollectorValidator {
 		boolean flag = true;
 		if (record.getTdlogrecordDbIdx() > 0) {
 			result.setErrorLevel(TdlogResultCode.DC_WRONG_SEQUENCE.getResultCode());
+			result.setErrorMessage("TdlogRecord has stale Entry. Please check the configuration Implementation");
 			LOGGER.warn(result.toString());
 			flag = false;
 		}

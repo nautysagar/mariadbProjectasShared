@@ -88,7 +88,7 @@ public class ConfigurationService {
 
 	public List<TdlogRecord> getTdlogRecordByID(int id) {
 		LOGGER.debug("TdlogRecord.GetTdlogRecordById " + id);
-		em.clear();
+	//	em.clear();
 		Query q = em.createNamedQuery("TdlogRecord.GetTdlogRecordById");
 		q.setParameter("id", id);
 		List<TdlogRecord> result = q.getResultList();
@@ -96,14 +96,14 @@ public class ConfigurationService {
 		return result;
 	}
 
-	public List<TdlogRecord> getTdlogRecordWithTouchDownByID(int id) {
+	/*public List<TdlogRecord> getTdlogRecordWithTouchDownByID(int id) {
 		LOGGER.debug("TdlogRecord.GetRecordsWithTouchDown " + id);
 		em.clear();
 		Query q = em.createNamedQuery("TdlogRecord.GetRecordsWithTouchDown");
 		q.setParameter("id", id);
 		List<TdlogRecord> result = q.getResultList();
 		return result;
-	}
+	}*/
 
 	public List<Object> getTouchdownId(int tdlogRecordId, int idx) {
 		LOGGER.debug("TouchDown::GET_RECORD_ID_BY_TDLOGRECORDID_AND_IDX " + tdlogRecordId + "::" + idx);
@@ -149,7 +149,7 @@ public class ConfigurationService {
 	 * update the TouchDown table with record state, deliveryTime and peWait Time
 	 * database.
 	 */
-	public int updateTouchdownStateAndTime(TdlogRecordState recordState, double deliveryTime, double peWaitTime,
+	/*public int updateTouchdownStateAndTime(TdlogRecordState recordState, double deliveryTime, double peWaitTime,
 			int id) {
 		LOGGER.debug("TouchDown:UPDATE_RECORD_BY_RECORD_STATE_DELIVERYTIME_PETIME ");
 		Query q = em.createNamedQuery("Touchdown.UpdateStateDeliveryPeTime");
@@ -160,6 +160,6 @@ public class ConfigurationService {
 		int result = q.executeUpdate();
 		return result;
 
-	}
+	}*/
 
 }

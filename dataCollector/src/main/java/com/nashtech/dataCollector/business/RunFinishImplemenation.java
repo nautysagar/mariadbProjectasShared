@@ -23,12 +23,10 @@ public class RunFinishImplemenation extends AbstractDataCollector {
 
 	public TdlogResult runFinish(int logCount) {
 		LOGGER.error(" DataCollector::runFinish()");
-		TdlogRecord tdlogrecordEntity = DatabaseDataCollectorUtil.getTdlogRecordByGroupUUID(record.getRungroupUuid(),result);
 		if (result.getErrorLevel() != 0) return result;
-		DataCollectorConversionUtil.updateFinalRecords(tdlogrecordEntity,logCount,result);
+		DataCollectorConversionUtil.updateFinalRecords(entity,logCount,result);
 		if (result.getErrorLevel() != 0) return result;
-		DataCollectorConversionUtil.checkForInValidTouchDownRecords(tdlogrecordEntity,result); //whats the point of this since we are returning always success
-//		pool.shutdown();
+		DataCollectorConversionUtil.checkForInValidTouchDownRecords(entity,result); //whats the point of this since we are returning always success
 		processor.emptyAllCache();
 		initializeVariables();
 		return result;

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import com.nashtech.dataCollector.entry.DataCollectorTest;
 import com.nashtech.dataCollector.enums.TdlogResultCode;
 
 public class DataCollectorPushDataTest {
@@ -16,12 +17,12 @@ public class DataCollectorPushDataTest {
 	private static final String dataBlockContent = "xyz";
 	private static final int deviceNumber = 123;
 
-	@Test
+	/*@Test
 	public void testPushData() {
 		int logLevel = DataCollectorTest.dataCollector
 				.pushData(siteNumber, xCoordinate, yCoordinate, dataBlockIndexStr, dataBlockContent).getErrorLevel();
 		assertEquals(TdlogResultCode.OK.getResultCode(), logLevel);
-	}
+	}*/
 
 	/*@Test
 	public void testPushData2() {
@@ -37,12 +38,12 @@ public class DataCollectorPushDataTest {
 		assertEquals(TdlogResultCode.OK.getResultCode(), logLevel);
 	}
 
-	@Test
+	/*@Test
 	public void testPushData4() {
 		int logLevel = DataCollectorTest.dataCollector
 				.pushData(siteNumber, deviceNumber, dataBlockIndex, dataBlockContent).getErrorLevel();
 		assertEquals(TdlogResultCode.OK.getResultCode(), logLevel);
-	}
+	}*/
 
 	
 	

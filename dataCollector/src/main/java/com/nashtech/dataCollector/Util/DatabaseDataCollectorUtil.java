@@ -134,20 +134,18 @@ public class DatabaseDataCollectorUtil {
 		return config.get(0);
 	}
 
-	public static int saveTdLogrecord(TdlogRecord record, TdlogExtendResult result) {
-		int id = -2;
-
+	public static TdlogRecord saveTdLogrecord(TdlogRecord record, TdlogExtendResult result) {
 		try {
-			id = dao.create(record);
+			record = dao.create(record);
 
 		} catch (RuntimeException e) {
 			result.setErrorLevel(TdlogResultCode.SQL_INSERT_FAULT.getResultCode());
 			result.setErrorMessage("TdlogRecord Persist Failed::" + e.getMessage());
 			LOGGER.debug(result.toString());
-			return id;
+			return null;
 		}
 
-		return id;
+		return record;
 	}
 
 	public static TdlogRecord mergeTdLogrecord(TdlogRecord record, TdlogExtendResult result) {
@@ -226,22 +224,7 @@ public class DatabaseDataCollectorUtil {
 		result.setErrorLevel(TdlogResultCode.OK.getResultCode());
 		return config.get(0);
 	}
-
-	public static TdlogRecord getTdlogRecordWithTouchDownByID(int id) {
-		List<TdlogRecord> config = null;
-
-		try {
-			config = configService.getTdlogRecordWithTouchDownByID(id);
-
-		} catch (IllegalStateException | QueryTimeoutException e) {
-			LOGGER.warn("No Tdlog record by id execution failed ");
-			return null;
-		}
-		if (DataCollectorValidator.isEmpty(config))
-			return null;
-
-		return config.get(0);
-	}
+	
 
 	public static int getTdlogRecordCountByCondition() {
 		int val = 0;
@@ -280,36 +263,6 @@ public class DatabaseDataCollectorUtil {
 
 	}
 
-	public static int updateTouchDownRecordStateAndTime(TdlogRecordState recordState, double deliveryTime,
-			double peWaitTime, int id) {
-
-		try {
-			return configService.updateTouchdownStateAndTime(recordState, deliveryTime, peWaitTime, id);
-
-		} catch (RuntimeException e) {
-			LOGGER.error("Update fail for touch down record");
-		}
-		
-		return -1;
-
-	}
-/*
-	public static ConfigurationService getConfigService() {
-		return configService;
-	}
-
-	public static void setConfigService(ConfigurationService configService) {
-		DatabaseDataCollectorUtil.configService = configService;
-	}
-
-	public static ConfiguationDao getDao() {
-		return dao;
-	}
-
-	public static void setDao(ConfiguationDao dao) {
-		DatabaseDataCollectorUtil.dao = dao;
-	}*/
-
 	public ConfigurationService getTconfigService() {
 		return tconfigService;
 	}
@@ -326,18 +279,6 @@ public class DatabaseDataCollectorUtil {
 		this.tdao = tdao;
 	}
 
-	/*
-	 * public static void callTouchDownDataprocedure(int touchDownId, int
-	 * sitenumber, int x, int y,int dataBlockId, String uuid, int
-	 * uniqueIdx,TdlogExtendResult result) { try {
-	 * result.setErrorLevel(dao.createConfiguration(touchDownId, sitenumber, x, y,
-	 * dataBlockId, uuid, uniqueIdx));
-	 * 
-	 * } catch (IllegalArgumentException e) { LOGGER.error("Procedure call failed");
-	 * result.setErrorLevel(-2); } }
-	 */
-
-	
 	
 	
 }

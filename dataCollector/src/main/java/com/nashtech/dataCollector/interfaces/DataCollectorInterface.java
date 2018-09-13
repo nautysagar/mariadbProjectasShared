@@ -178,8 +178,8 @@ public interface DataCollectorInterface {
 	 * @return - TdlogResult (Errorcode and Error Message) negative value in case of
 	 *         errors; 0 = successful / no error;
 	 */
-	public TdlogResult pushData(int siteNumber, int xCoordinate, int yCoordinate, String dataBlockIndex,
-			String dataBlockContent);
+	//public TdlogResult pushData(int siteNumber, int xCoordinate, int yCoordinate, String dataBlockIndex,
+	//		String dataBlockContent);
 
 	/**
 	 * public interface procedure to store the data records (WaferRun) inside the
@@ -263,7 +263,7 @@ public interface DataCollectorInterface {
 	 * @return TdlogResult (Errorcode and Error Message) negative value in case of
 	 *         errors; 0 = successful / no error;
 	 */
-	public TdlogResult pushData(int siteNumber, int deviceNumber, int dataBlockIndex, String dataBlockContent);
+//	public TdlogResult pushData(int siteNumber, int deviceNumber, int dataBlockIndex, String dataBlockContent);
 
 	/**
 	 * @brief PushDataEnd() function closes data collection for one touch-down and
